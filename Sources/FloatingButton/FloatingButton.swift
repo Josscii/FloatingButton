@@ -82,7 +82,7 @@ public struct FloatingButton<MainView, ButtonView>: View where MainView: View, B
             ForEach((0..<buttons.count), id: \.self) { i in
                 buttons[i]
                     .background(SubmenuButtonPreferenceViewSetter())
-                    .offset(alignmentOffsets.isEmpty ? .zero : alignmentOffsets[i])
+                    .offset(alignmentOffset(at: i))
                     .offset(buttonOffset(at: i))
                     .scaleEffect(isOpen ? 1 : initialScaling)
                     .opacity(mainButtonSize == .zero ? 0 : isOpen ? 1 : initialOpacity)
@@ -107,7 +107,12 @@ public struct FloatingButton<MainView, ButtonView>: View where MainView: View, B
         }
     }
     
+    fileprivate func alignmentOffset(at i: Int) -> CGSize {
+        i >= alignmentOffsets.count ? .zero : alignmentOffsets[i]
+    }
+    
     fileprivate func buttonOffset(at i: Int) -> CGSize {
+        i >= coords.count ? .zero :
         isOpen
         ? CGSize(width: coords[safe: i].x, height: coords[safe: i].y)
         : CGSize(width: (initialPositions.isEmpty ? 0 : initialPositions[safe: i].x),
@@ -115,7 +120,7 @@ public struct FloatingButton<MainView, ButtonView>: View where MainView: View, B
     }
     
     fileprivate func buttonAnimation(at i: Int) -> Animation {
-        animation.delay(delays.isEmpty ? Double(0) :
+        animation.delay(i >= delays.count ? Double(0) :
                             (isOpen ? delays[delays.count - i - 1] : delays[i]))
     }
     
